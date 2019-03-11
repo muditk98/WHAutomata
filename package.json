@@ -1,0 +1,26 @@
+{
+  "name": "whautomata",
+  "version": "1.0.0",
+  "description": "Warehouse automation system",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thewusspuss/WHAutomata.git"
+  },
+  "author": "Mudit Kapoor 16BLC1100",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thewusspuss/WHAutomata/issues"
+  },
+  "homepage": "https://github.com/thewusspuss/WHAutomata#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "joi": "^14.3.1",
+    "mongodb": "^3.1.13",
+    "mongoose": "^5.4.18",
+    "pug": "^2.0.3"
+  }
+}
