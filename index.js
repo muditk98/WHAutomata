@@ -15,9 +15,24 @@ app.locals.db.on('error', console.error.bind(console, 'MongoDB connection error:
 app.get('/', (req, res) => {
 	res.render('home');
 })
+
+app.get('/products', (req, res) => {
+	res.render('product');
+})
+app.post('/products', (req, res) => {
+	// form that allows us to add product.
+	res.send();
+})
+
 app.get('/bots', (req, res) => {
+	// query bots for location here.
+	// pass locations to render
 	res.render('bots');
 })
 app.get('/sensors', (req, res) => {
 	res.render('sensors');
+})
+
+app.locals.db.once('open', () => {
+	app.listen(3000);
 })
