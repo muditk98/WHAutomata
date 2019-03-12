@@ -1,0 +1,11 @@
+html
+    body
+        h1  Welcome to the Bots Page
+        hr
+        h3 List of available bots are, click on them for more details like location:
+        for bot in bots
+            li
+                a(href="/bot/"+bot.id) #{bot.id}
+        
+        span #{message}
+        

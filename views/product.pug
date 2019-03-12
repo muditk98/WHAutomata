@@ -1,0 +1,14 @@
+html
+    body
+        h1  Welcome to the Product Page
+        hr
+        h3 List of available products are, click on them for more details:
+        for product in products
+            li
+                a(href="/product/"+product.name) #{product.name}
+        
+        span #{message}
+        hr
+        a(href="/addProduct") Add a Product
+        hr
+        a(href="/deleteProduct") Delete a Product
