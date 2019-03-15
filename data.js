@@ -42,6 +42,7 @@ let products = [
 ]
 
 /*
+// This code also works. I was just trying out different methods of creating documents.
 models.mongoose.connection.once('open', async () => {
 	try {
 		stacks = await models.Stack.create(stacks)
@@ -104,7 +105,7 @@ models.mongoose.connection.once('open', async () => {
 		console.log('Successfully inserted products into stacks');
 		console.log(stackprods);
 	})
-	.catch (err => {
+	.catch(err => {
 		console.log('Caught an error');
 		console.error(err);
 	})
