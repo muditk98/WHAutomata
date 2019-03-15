@@ -37,12 +37,13 @@ var Product = mongoose.model('Product', ProductSchema);
 // https://mongoosejs.com/docs/populate.html
 
 var StackProductMapSchema = new mongoose.Schema({
-	stack: {type: Schema.Types.ObjectId, ref: 'Stack', required: true},
-	product: {type: Schema.Types.ObjectId, ref: 'Product', required: true},
+	stack: {type: mongoose.Schema.Types.ObjectId, ref: 'Stack', required: true},
+	product: {type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true},
 	count: {
 		type: Number,
 		min: 1,
-		required: true
+		required: true,
+		default: 1
 	}
 })
 var StackProductMap = mongoose.model('StackProductMap', StackProductMapSchema);
