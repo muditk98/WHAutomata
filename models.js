@@ -27,9 +27,10 @@ var Stack = mongoose.model('Stack', StackSchema);
 // Created Product schema. Only name is a required field
 var ProductSchema = new mongoose.Schema({
 	name: {type: String, required: true},
-	batch: Date,
+	batch: {type: Date, required: true},
 	expiry: Date
 })
+ProductSchema.index({name: 1, batch: 1}, {unique: true})
 var Product = mongoose.model('Product', ProductSchema);
 
 // StackProductMap holds stack id, product id, and product count. 
