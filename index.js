@@ -18,7 +18,6 @@ app.get('/', (req, res) => {
 
 app.get('/products', (req, res) => {
 	// page that shows all the products available in a list format and on clicking on each item the user can view product details
-	// add the db part of the code , i'll edit the front end accordingly
 	models.Product.find()
 	.then(products => {
 		res.render('products', {products});
@@ -57,7 +56,7 @@ app.post('/addProduct', (req, res) => {
 		// https://mongoosejs.com/docs/validation.html
 		// i'm redirecting to the form page with the message
 		//res.send('Improper form data')
-		res.render('addProduct',{message:'Improper form data'});
+		res.statusCode(400).render('addProduct',{message:'Improper form data'});
 	} 
 	else {
 		console.log(prod)
