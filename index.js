@@ -8,7 +8,6 @@ app.use(express.json());
 app.use(express.static('./public'));
 app.set('views', './views');
 app.set('view engine', 'pug');
-var port=3000;
 
 app.locals.db = models.mongoose.connection;
 app.locals.db.on('error', console.error.bind(console, 'MongoDB connection error:'));
@@ -20,7 +19,14 @@ app.get('/', (req, res) => {
 app.get('/products', (req, res) => {
 	// page that shows all the products available in a list format and on clicking on each item the user can view product details
 	// add the db part of the code , i'll edit the front end accordingly
-	res.render('product');
+	models.Product.find()
+	.then(products => {
+		res.render('products', {products});
+	})
+	.catch(err => {
+		console.error(err);
+		res.send("Whoops")
+	})
 })
 app.post('/products', (req, res) => {
 	res.send();
