@@ -1,5 +1,10 @@
 html
     body
+	//- stackmapdetails is a list of stackproductmaps that contain this product
+	//- stackmapdetails[0] gives a stackproductmap
+	//- stackmapdetails[0].stack.id gives id of stack
+	//- stackmapdetails[0].stack.x gives x location. similarly y
+	//- stackmapdetails[0].count gives the count of this product in this stack
         h1  #{product.id} - #{product.name}
         hr
         h3 Product Name :  #{product.name}

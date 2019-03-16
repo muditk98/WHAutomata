@@ -76,9 +76,9 @@ app.post('/addProduct', (req, res) => {
 	// res.send();
 })
 
-app.get('/deleteProduct',(req,res)=>{
+app.get('/deleteProduct', (req,res) => {
 	//delete products page
-		res.render('deleteProduct');
+	res.render('deleteProduct');
 })
 app.post('/deleteProduct', (req, res) => {
 		//we are taking productId and a confirmation that if you really wanna delete the product
@@ -86,12 +86,29 @@ app.post('/deleteProduct', (req, res) => {
 		res.send();
 })
 
-app.get('/product/:id',(req,res)=>{
+app.get('/products/:id',(req,res)=>{
     var id=req.params.id;
 	//extract product details based on the id
 	//get stack details and count of products by comparing product id in stackProductMapSchema
-    
-    res.render('productDetails',{product,stackdetails})
+	Promise.all(
+		[
+			models.Product.findOne({
+				_id: id
+			}),
+			models.StackProductMap.find({
+					product: id
+				})
+				.populate('stack')
+		]
+	)
+	.then(([product, stackmapdetails]) => {
+		// res.render('productDetails', {product,stackmapdetails})
+		res.send({product, stackmapdetails})
+	})
+	.catch(err => {
+		console.error(err);
+		res.send('Whoops. Something happened')
+	})
 })
 
 app.get('/bots', (req, res) => {
@@ -108,15 +125,17 @@ app.get('/sensors', (req, res) => {
 	res.render('sensors');
 })
 
-// app.locals.db.once('open', () => {
-// 	app.listen(3000);
-// })
 app.get('*',(req,res)=>{
 	res.send("This is not a valid URL");
 	});
 app.post('*',(req,res)=>{
-		res.send("This is not a valid URL");
-		});
-app.listen(port)
-console.log("Server is running on Port :",port);
+	res.send("This is not a valid URL");
+	});
+
+app.locals.db.once('open', () => {
+	let PORT = process.env.PORT || 3000
+	app.listen(PORT, () => {
+		console.log(`Server is running on Port: ${PORT}`);
+	})
+})
 	
