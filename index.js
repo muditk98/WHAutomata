@@ -19,6 +19,7 @@ app.get('/', (req, res) => {
 
 app.get('/products', (req, res) => {
 	// page that shows all the products available in a list format and on clicking on each item the user can view product details
+	// add the db part of the code , i'll edit the front end accordingly
 	res.render('product');
 })
 app.post('/products', (req, res) => {
@@ -48,7 +49,9 @@ app.post('/addProduct', (req, res) => {
 	if (validation_errors) { 
 		// Check out 
 		// https://mongoosejs.com/docs/validation.html
-		res.send('Improper form data')
+		// i'm redirecting to the form page with the message
+		//res.send('Improper form data')
+		res.render('addProduct',{message:'Improper form data'});
 	} 
 	else {
 		console.log(prod)
@@ -59,12 +62,13 @@ app.post('/addProduct', (req, res) => {
 		.then(product => {
 			console.log(product);
 			if (product) {
-				res.send('This product already exists')
+				res.render('addProduct',{message:'This product already exists'});
 			} 
 			else {
 				prod.save()
 				.then(() => {
 					res.send('Success')
+					//Shouldn't we redirect to /products page after this?
 				})
 				.catch(err => {
 					console.error(err);
