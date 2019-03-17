@@ -1,5 +1,6 @@
 const express = require('express');
 let models = require('./models');
+const axios = require('axios');
 let app = express();
 app.use(express.urlencoded({
 	extended: true
@@ -251,10 +252,37 @@ app.get('/sensors', (req, res) => {
 // 	res.send("This is not a valid URL");
 // 	});
 
+app.post('/cb', (req, res) => {
+	console.log(req.body);
+	res.send('Recieved')
+})
+
+app.post('/tasks', (req, res) => {
+	axios.post('http://192.168.43.165:8000/tasks',
+		{
+			x:req.body.x,
+			y:req.body.y,
+			callback_url:'http://192.168.43.210:3000/cb'
+		}
+	).then((response) => {
+		console.log(response.status);
+		console.log(response.data);
+		// console.log(response.body);
+		res.send('ok')
+	})
+	.catch(err => {
+		// console.log(err);
+		if (err.response.status == 503) {
+			res.send('Bot was busy')
+		} else {
+			res.send('whoops')
+		}
+	})
+})
+
 app.locals.db.once('open', () => {
 	let PORT = process.env.PORT || 3000
 	app.listen(PORT, () => {
 		console.log(`Server is running on Port: ${PORT}`);
 	})
 })
-	
