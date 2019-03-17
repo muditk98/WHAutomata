@@ -39,15 +39,16 @@ app.get('/stacks', (req, res) => {
 })
 
 app.post('/addProductsToStack', (req, res) => { // This name sucks. Suggest a better one
-	// If this one isn't working then try the api version
 	var product_id = req.body.product_id
 	var stack = {
 		x: req.body.x,
 		y: req.body.y
 	}
+	console.log(req.body);
+
 	req.body.count = req.body.count || 1
 	// console.log(typeof req.body.count);
-	req.body.count = parseInt(req.body.count)
+	req.body.count = parseInt(req.body.count) || 1
 	if (!req.body.count) {
 		res.status(400).send('Bad')
 		return
@@ -61,7 +62,7 @@ app.post('/addProductsToStack', (req, res) => { // This name sucks. Suggest a be
 		.then(([product, stack]) => {
 			console.log(product);
 			console.log(stack);
-			
+
 			if (product && stack) {
 				models.StackProductMap.findOne({
 						product: product._id,
@@ -89,7 +90,7 @@ app.post('/addProductsToStack', (req, res) => { // This name sucks. Suggest a be
 					.then(map => {
 						res.send({
 							message: 'Success',
-							map
+							map: map
 						})
 					})
 			} else {
@@ -107,6 +108,7 @@ app.post('/addProductsToStack', (req, res) => { // This name sucks. Suggest a be
 			})
 		})
 })
+
 
 app.get('/products', (req, res) => {
 	// page that shows all the products available in a list format and on clicking on each item the user can view product details
@@ -242,12 +244,12 @@ app.get('/sensors', (req, res) => {
 	res.render('sensors');
 })
 
-app.get('*',(req,res)=>{
-	res.send("This is not a valid URL");
-	});
-app.post('*',(req,res)=>{
-	res.send("This is not a valid URL");
-	});
+// app.get('*',(req,res)=>{
+// 	res.send("This is not a valid URL");
+// 	});
+// app.post('*',(req,res)=>{
+// 	res.send("This is not a valid URL");
+// 	});
 
 app.locals.db.once('open', () => {
 	let PORT = process.env.PORT || 3000
