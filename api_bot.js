@@ -25,7 +25,10 @@ device.findSerialPortChannel(address, function (channel) {
 
 	// make bluetooth connect to remote device
 	bluetooth.connect(address, channel, function (err, connection) {
-		if (err) return console.error(err);
+		if (err){
+			console.error(err);
+			console.log('Disconnected');
+		} 
 		app.locals.bcon = connection
 		connection.on('data', (buffer) => {
 			console.log('received message:', buffer.toString());
@@ -33,6 +36,16 @@ device.findSerialPortChannel(address, function (channel) {
 			
 			if (/done/.test(buffer)) {
 				app.locals.state = 'idle'
+				axios.post(app.locals.callback_url, {
+					message: 'Delivered'
+				})
+				.then(response => {
+					console.log(response.status);
+					console.log(response.data);
+				})
+				.catch(ax_err => {
+					console.log('Axios err');
+				})
 			}
 		});
 		connection.on('error', (err) => {
