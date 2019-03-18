@@ -1,6 +1,5 @@
 const express = require('express');
-const raspi = require('raspi');
-const Serial = require('raspi-serial').Serial;
+const bluetooth = require('node-bluetooth')
 const axios = require('axios');
 
 let app = express();
@@ -8,6 +7,8 @@ app.use(express.urlencoded({
 	extended: true
 }));
 app.use(express.json());
+const device = new bluetooth.DeviceINQ();
+const address = '98:D3:32:20:59:62'
 
 app.locals.state = 'idle';
 // app.locals.queue = []
@@ -17,35 +18,33 @@ app.locals.location = {
 	x: 0,
 	y: 0
 }
-raspi.init(() => {
-	app.locals.serial = new Serial("/dev/rfcomm0");
-	app.locals.serial.open(() => {
-		app.locals.serial.on('data', (data) => {
-			data = data.toString()
-			console.log(data);
-			if (data == 'done') {
-				app.locals.state = 'idle';
-				axios.post(app.locals.callback_url,
-					{
-						message: done
-					}
-				).then(response => {
-					console.log(body);
-				})
-				.catch(err => {
-					console.log(err);
-				})
-			} else if (/\d+:\d+/.test(data)) {
-				app.locals.location = {
-					x: data.split(':')[0],
-					y: data.split(':')[1]
-				}
+app.locals.nextword = '';
+app.locals.buff = ''
+device.findSerialPortChannel(address, function (channel) {
+	console.log('Found RFCOMM channel for serial port  ', channel);
+
+	// make bluetooth connect to remote device
+	bluetooth.connect(address, channel, function (err, connection) {
+		if (err) return console.error(err);
+		app.locals.bcon = connection
+		connection.on('data', (buffer) => {
+			console.log('received message:', buffer.toString());
+			buffer = buffer.toString()
+			
+			if (/done/.test(buffer)) {
+				app.locals.state = 'idle'
 			}
 		});
+		connection.on('error', (err) => {
+			console.log(err);
+			
+		})
+		app.listen(8000 ,() => {
+			console.log('Listening on 8000');
+			
+		})
 	});
-	app.listen(8000, () => {
-		console.log("Server started on 8000");
-	})
+
 });
 
 app.post('/tasks', function (req, res) {
@@ -53,7 +52,7 @@ app.post('/tasks', function (req, res) {
 		var y = req.body.y
 	if (app.locals.state == 'idle') {
 		// send command to arduino here using serial/bluetooth
-		app.locals.serial.write('A', () => {
+		app.locals.bcon.write(new Buffer(`g:${x}:${y}`, 'utf-8'), () => {
 			console.log('Just wrote to bluetooth');
 		})
 		res.status(202).send({message: 'Accepted'})
