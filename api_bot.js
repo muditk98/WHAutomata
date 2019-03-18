@@ -53,11 +53,10 @@ app.post('/tasks', function (req, res) {
 		var y = req.body.y
 	if (app.locals.state == 'idle') {
 		// send command to arduino here using serial/bluetooth
+		app.locals.serial.write('A', () => {
+			console.log('Just wrote to bluetooth');
+		})
 		res.status(202).send({message: 'Accepted'})
-		setTimeout(
-			() => {
-				app.locals.serial.write(`g:${x}:${y}`)
-			}, 0)
 		app.locals.state = 'processing'
 		app.locals.callback_url = req.body.callback_url
 	} else {
