@@ -16,9 +16,11 @@ app.locals.db.on('error', console.error.bind(console, 'MongoDB connection error:
 // add products [/]
 // delete products/:id   by id [/]
 // view stack (get) [/]
-// add stack (post) [x]
+// view stack/:id (get) [/]
+// add stack (post) [/]
+// delete stack [/]
+// view map [/]
 // add to map [/]
-// view map [x]
 
 
 app.get('/products', (req, res) => {
@@ -174,7 +176,99 @@ app.get('/stacks', (req, res) => {
 		})
 })
 
-app.post('/addProductsToStack', (req, res) => { // This name sucks. Suggest a better one
+app.get('/stacks/:id', (req, res) => {
+	var id = req.params.id;
+	models.Stack.findOne({
+			_id: id
+		})
+		.then(stack => {
+			res.send({
+				stack
+			})
+		})
+		.catch(err => {
+			console.error(err);
+			res.status(500).send({
+				message: 'A server side error has occured'
+			})
+		})
+})
+
+app.post('/stacks', (req, res) => {
+	if (!req.body.x || !req.body.y) {
+		res.status(400).send({
+			message: "Post both x and y"
+		})
+		return;
+	}
+	models.Stack.findOne({
+		x: req.body.x,
+		y: req.body.y
+	})
+		.then(stack => {
+			if (stack) {
+				res.status(409).send({
+					message: 'Stack already exists',
+					uri: `/stacks/${stack._id}`
+				})
+				return;
+			}
+			models.Stack({
+				x: req.body.x,
+				y: req.body.y
+			}).save()
+				.then(stack => {
+					res.send({
+						message: 'Stack created',
+						uri: `/stacks/${stack._id}`
+					})
+				})
+				.catch(err => {
+					res.status(500).send(err)
+				})
+		})
+})
+
+app.delete('/stacks/:id', (req, res) => {
+	// Delete it. 
+	// returns ok, n and deletedCount. All should be 1 for successful delete
+	Promise.all([
+			models.Stack.deleteOne({
+				_id: req.params.id
+			}),
+			models.StackProductMap.deleteMany({
+				stack: req.params.id
+			})
+		])
+		.then(results => {
+			res.send(results)
+		})
+		.catch(err => {
+			console.error(err);
+			res.status(500).send({
+				message: 'A server side error has occured'
+			})
+		})
+})
+
+app.get('/map', (req, res) => {
+	query = {}
+	if ("product" in req.query) {
+		query.product = req.query.product
+	}
+	if ("stack" in req.query) {
+		query.stack = req.query.stack
+	}
+	models.StackProductMap.find(query)
+		.then(maps => {
+			res.send(maps)
+		})
+		.catch(err => {
+			res.status(500).send(err);
+		})
+})
+
+app.post('/map', (req, res) => { 
 	var product_id = req.body.product_id
 	var stack = {
 		x: req.body.x,
