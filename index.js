@@ -234,6 +234,13 @@ app.get('/products/:id',(req,res)=>{
 app.get('/bots', (req, res) => {
 	// query bots for location here.
 	// pass locations to render
+	axios.get('https://192.168.43.165:8000/')
+		.then(response => {
+			res.send(response.body)
+		})
+		.catch(err => {
+			res.send('Whoops')
+		})
 	res.render('bots');
 })
 app.get('/bot/:id',(req,res)=>{
