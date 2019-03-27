@@ -13,14 +13,11 @@ html
 					p  Location: (#{val.stack.x}, #{val.stack.y})
 					p  Count: #{val.count}
 					//- p Do you want to bring this product?
-					form(action="/tasks" method="POST")
-						//- label x:
-						input(type="number" name="x" value=val.stack.x readonly style="display:none;")
-						//- br
-						//- label y:
-						input(type="number" name="y" value=val.stack.y readonly style="display:none;")
-						//- br
-						input(type="Submit" value="Bring")
+					if !val.processing && !val.atControl
+						form(action="/tasks" method="POST")
+							input(type="text" id="id" name="id" value=val._id readonly style="display:none;")			
+							input(type="text" id="cmd" name="cmd" value='g' readonly style="display:none;")
+							input(type="Submit" value="Bring")
 					
 
 		//- h3 :   #{stack.id}

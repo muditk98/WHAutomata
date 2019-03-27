@@ -13,6 +13,11 @@ app.set('view engine', 'pug');
 app.locals.db = models.mongoose.connection;
 app.locals.db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
+delete process.env['http_proxy'];
+delete process.env['HTTP_PROXY'];
+delete process.env['https_proxy'];
+delete process.env['HTTPS_PROXY'];
+
 app.get('/', (req, res) => {
 	res.render('home');
 })
@@ -296,7 +301,7 @@ app.get('/products/:id',(req,res)=>{
 app.get('/bots', (req, res) => {
 	// query bots for location here.
 	// pass locations to render
-	axios.get('https://192.168.43.165:8000/')
+	axios.get('http://192.168.43.165:8000/')
 		.then(response => {
 			// res.send(response.body)
 			res.render('botDetails', {
@@ -304,7 +309,8 @@ app.get('/bots', (req, res) => {
 			});
 		})
 		.catch(err => {
-			res.send('Whoops')
+			console.log(err.message)
+			res.render('botDetails', {message:"Bot is offline"})
 		})
 		//send {bots} too
 })
@@ -326,60 +332,87 @@ app.get('/sensors', (req, res) => {
 
 app.post('/cb', (req, res) => {
 	console.log(req.body);
-	models.Stack.findOne({
-		x: req.body.location.x,
-		y: req.body.location.y,
-	})
-	.then(stack => {
-		stack.x = 0
-		stack.y = 0
-		stack.processing = false;
-		return stack.save();
-	})
-	.catch(err => {
-		console.log(err);
-	})
-	.then(stack => {
-		res.send('Recieved')
-	})
+	if (['g','r'].includes(req.body.cmd)) {
+		models.Stack.findOne({
+			x: req.body.location.x,
+			y: req.body.location.y,
+		})
+		.then(stack => {
+			stack.processing = false;
+			stack.atControl = (req.body.cmd == 'g' && req.body.message.toLowerCase() != 'rfiderr');
+			return stack.save();
+		})		
+		.then(stack => {
+			res.send('server: Recieved')
+		})
+		.catch(err => {
+			console.log(err);
+			res.send('server: whoops')
+		})
+	} else {
+		res.send('server: ok')
+	}
 })
 
 app.post('/tasks', (req, res) => {
-	models.Stack.findOne({
-		x: req.body.x,
-		y: req.body.y
-	})
-	.then(stack => {
-		if (stack) {
-			stack.processing = true;
-			return stack.save()
-		} else {
-			throw "no stack"
-		}
-	})
-	.then(stack => {
+	if (!req.body.id && req.body.cmd == 's') {
 		axios.post('http://192.168.43.165:8000/tasks', {
-			x: req.body.x,
-			y: req.body.y,
+			cmd: req.body.cmd || 's',
 			callback_url: 'http://192.168.43.210:3000/cb'
 		})
-	})
-	.then((response) => {
-		console.log(response.status);
-		console.log(response.data);
-		// console.log(response.body);
-		res.send('ok')
-	})
-	.catch(err => {
-		// console.log(err);
-		if (err.response.status == 503) {
-			res.send('Bot was busy')
-		} else if(err == 'no stack') {
-			res.send(err)
-		} else {
-			res.send('whoops')
-		}
-	})
+		.then((response) => {
+				console.log(response.status);
+				console.log(response.data);
+				// console.log(response.body);
+				res.redirect(`/bots`)
+			})
+			.catch(err => {
+				// console.log(err);
+				if (err.response.status == 503) {
+					res.send('Bot was busy')
+				} else if (err == 'no stack') {
+					res.send(err)
+				} else {
+					res.send('whoops')
+				}
+			})
+	} else {	
+		models.Stack.findOne({
+			_id: req.body.id,
+		})
+		.then(stack => {
+			if (stack) {
+				stack.processing = true;
+				return stack.save()
+			} else {
+				throw "no stack"
+			}
+		})
+		.then(stack => {
+			return axios.post('http://192.168.43.165:8000/tasks', {
+				x: stack.x,
+				y: stack.y,
+				cmd: req.body.cmd || 'g',
+				callback_url: 'http://192.168.43.210:3000/cb'
+			})
+		})
+		.then((response) => {
+			console.log(response.status);
+			console.log(response.data);
+			// console.log(response.body);
+			res.redirect(`/stacks/${req.body.id}`)
+		})
+		.catch(err => {
+			// console.log(err);
+			if (err.response.status == 503) {
+				res.send('Bot was busy')
+			} else if(err == 'no stack') {
+				res.send(err)
+			} else {
+				res.send('whoops')
+			}
+		})
+	}
 })
 
 app.locals.db.once('open', () => {

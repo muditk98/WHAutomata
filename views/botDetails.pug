@@ -1,8 +1,14 @@
 html
-    body
-        include navbar.html
-        h1  #{bot.id}
-        hr
-        h3 bot Name :  #{bot.name}
-        h3 bot location: #{bot.location}
-        h3 bot status:  #{bot.status}
+	body
+		include navbar.html
+		if bot
+			h1  #{bot.id}
+			hr
+			//- h3 bot Name :  #{bot.name}
+			h3 bot location: (#{bot.location.x}, #{bot.location.y})
+			h3 bot status:  #{bot.status}
+			if bot.status == 'idle'
+				form(action="/tasks", method="post")
+					input(type="text" id="cmd" name="cmd" value='s' readonly style="display:none;")
+					input(type="submit", value="Service")
+		p #{message}

@@ -21,6 +21,10 @@ var StackSchema = new mongoose.Schema({
 	processing: {
 		type: Boolean,
 		default: false
+	},
+	atControl: {
+		type: Boolean,
+		default: false
 	}
 })
 // make sure that only one stack can be on a location

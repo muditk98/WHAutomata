@@ -10,15 +10,11 @@ let models = require('./models')
 
 let stacks = [
 	{
+		x: 2,
+		y: 1
+	},
+	{
 		x: 3,
-		y: 3
-	},
-	{
-		x: 4,
-		y: 2
-	},
-	{
-		x: 1,
 		y: 1
 	}
 ]
@@ -77,9 +73,12 @@ models.mongoose.connection.once('open', async () => {
 */
 
 models.mongoose.connection.once('open', async () => {
-	stacks = models.Stack.create(stacks)
-	products = models.Product.create(products)
-	Promise.all([stacks, products])
+	models.mongoose.connection.db.dropDatabase()
+	.then(() => {
+		stacks = models.Stack.create(stacks)
+		products = models.Product.create(products)
+		return Promise.all([stacks, products])
+	})
 		.then(([stacks, products]) => {
 		// stacks = values[0]
 		// products = values[1]
@@ -89,7 +88,7 @@ models.mongoose.connection.once('open', async () => {
 				product: products[0]._id,
 			},
 			{
-				stack: stacks[2]._id,
+				stack: stacks[1]._id,
 				product: products[1]._id,
 				count: 3
 			},
