@@ -27,9 +27,7 @@ app.get('/stacks', (req, res) => {
 	}
 	models.Stack.find(query)
 		.then(stacks => {
-				res.send({
-					stacks
-				})
+				res.render('stacks',{stacks});
 			})
 			.catch(err => {
 				console.error(err);
@@ -39,13 +37,48 @@ app.get('/stacks', (req, res) => {
 			})
 })
 
-app.post('/addProductsToStack', (req, res) => { // This name sucks. Suggest a better one
+app.get('/stacks/:id', (req, res) => {
+	var id = req.params.id;
+	models.Stack.findOne({
+			_id: id
+		})
+		.then(stack => {
+			res.render('stackDetails',{stack});
+		})
+		.catch(err => {
+			console.error(err);
+			res.status(500).send({
+				message: 'A server side error has occured'
+			})
+		})
+})
+
+app.get('/addProductToStack',(req,res)=>{
+	models.Stack.find()
+		.then(stacks => {
+			
+			models.Product.find()
+				.then(products => {
+					res.render('addProductToStack', {products,stacks});
+				})
+				.catch(err => {
+					console.error(err);
+					res.send("Whoops")
+				})
+			})
+			.catch(err => {
+				console.error(err);
+				res.status(500).send({
+					message: 'A server side error has occured'
+				})
+			})
+})
+app.post('/addProductToStack', (req, res) => { 
 	var product_id = req.body.product_id
 	var stack = {
 		x: req.body.x,
 		y: req.body.y
 	}
-	console.log(req.body);
 
 	req.body.count = req.body.count || 1
 	// console.log(typeof req.body.count);

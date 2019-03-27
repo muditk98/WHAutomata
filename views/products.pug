@@ -1,14 +1,17 @@
 html
     body
-        h1  Welcome to the Product Page
-        hr
-        h3 List of available products are, click on them for more details:
-        for product in products
-            li
-                a(href="/products/"+product._id) Name: #{product.name}   Batch: #{product.batch.toLocaleDateString()}
-        
-        span(style={color: 'red', background: 'white'}) #{message}
-        hr
-        a(href="/addProduct") Add a Product
-        hr
-        a(href="/deleteProduct") Delete a Product
+        include navbar.html
+        div
+            h1  Welcome to the Product Page
+            hr
+            a(href="/addProduct") Add a Product
+            br
+            a(href="/deleteProduct") Delete a Product
+            hr
+            h2 List of available products are, click on them for more details:
+            for product in products
+                li
+                    a(href="/products/"+product._id) Name: #{product.name}   Batch: #{product.batch.toLocaleDateString()}
+            
+            span(style={color: 'red', background: 'white'}) #{message}
+            

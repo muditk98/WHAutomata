@@ -1,0 +1,11 @@
+html
+    body
+        include navbar.html
+        h1  Welcome to the Stack Page
+        hr
+        h3 List of available stacks are, click on them for more details:
+        for stack in stacks
+            li
+                a(href="/stacks/"+stack._id) Location: (#{stack.x} , #{stack.y})
+        
+        span(style={color: 'red', background: 'white'}) #{message}
