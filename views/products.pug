@@ -5,9 +5,9 @@ html
         h3 List of available products are, click on them for more details:
         for product in products
             li
-                a(href="/products/"+product._id) Name: #{product.name} Batch: #{product.batch.toLocaleDateString()}
+                a(href="/products/"+product._id) Name: #{product.name}   Batch: #{product.batch.toLocaleDateString()}
         
-        span #{message}
+        span(style={color: 'red', background: 'white'}) #{message}
         hr
         a(href="/addProduct") Add a Product
         hr

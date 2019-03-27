@@ -2,12 +2,12 @@ html
     body
         h1  Welcome to delete a  Product page
         hr
-        h2 Fill the following details
-            form(action="/deleteProduct" method="POST")
-                input(type="text" name="id" placeholder="Productid")
-                br
-                select(name="delete")
+        h3 List of available products are, click on them for to delete them:
+        form(action="/deleteProduct" method="POST")
+            select(name="id")
+                each product in products
+                    option(value=product.id) #{product.name} 
+            select(name="delete")
                     option(value="No", selected="true") No
                     option(value="Yes") Yes
-                input(type="Submit" value="Submit")
-        span #{message}
+            input(type="Submit" value="Submit")

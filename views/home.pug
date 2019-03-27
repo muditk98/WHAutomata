@@ -2,3 +2,15 @@ html
     body
         div
             h1 Welcome to the temporary home page
+            h2 To give the command to the bots:
+            form(action="/tasks" method="POST")
+                label X-axis coordinate 
+                br
+                input(type="number" name="xaxis" placeholder="X coordinate " min="-1" max="3" required)
+                br
+                label Y axis Coordinate
+                br
+                input(type="number" name="yaxis" placeholder="Y coordinate " min="0" max="3" required)
+                br
+                input(type="Submit" value="Submit")
+        span(style={color: 'red', background: 'white'}) #{message}

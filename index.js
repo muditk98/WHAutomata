@@ -167,7 +167,15 @@ app.post('/addProduct', (req, res) => {
 			else {
 				prod.save()
 				.then(() => {
-					res.send('Success')
+					models.Product.find()
+					.then(products => {
+						res.render('products', {products,message:"Successfully Added"});
+					})
+					.catch(err => {
+						console.error(err);
+						res.send("Whoops")
+					})
+					//res.send('Success')
 					//Shouldn't we redirect to /products page after this?
 				})
 				.catch(err => {
@@ -181,22 +189,38 @@ app.post('/addProduct', (req, res) => {
 })
 
 app.get('/deleteProduct', (req,res) => {
-	//delete products page
-	res.render('deleteProduct');
+	models.Product.find()
+	.then(products => {
+		res.render('deleteProduct', {products});
+	})
+	.catch(err => {
+		console.error(err);
+		res.send("Whoops")
+	})
 })
 app.post('/deleteProduct', (req, res) => {
 		//we are taking productId and a confirmation that if you really wanna delete the product
 		//send message deleted successfully and redirect to the products page
+		console.log(req.body)
 		Promise.all([
 				models.Product.deleteOne({
 					_id: req.body.id
+					
 				}),
 				models.StackProductMap.deleteMany({
 					product: req.body.id
 				})
 			])
 			.then(results => {
-				res.send(results)
+				models.Product.find()
+				.then(products => {
+					res.render('products', {products,message:"Successfully Deleted"});
+				})
+				.catch(err => {
+					console.error(err);
+					res.send("Whoops")
+				})
+				//res.send(results)
 			})
 			.catch(err => {
 				console.error(err);
@@ -222,8 +246,9 @@ app.get('/products/:id',(req,res)=>{
 		]
 	)
 	.then(([product, stackmapdetails]) => {
-		// res.render('productDetails', {product,stackmapdetails})
-		res.send({product, stackmapdetails})
+		console.log(product)
+		res.render('productDetails', {product,stackmapdetails})
+		//res.send({product, stackmapdetails})
 	})
 	.catch(err => {
 		console.error(err);
@@ -241,6 +266,7 @@ app.get('/bots', (req, res) => {
 		.catch(err => {
 			res.send('Whoops')
 		})
+		//send {bots} too
 	res.render('bots');
 })
 app.get('/bot/:id',(req,res)=>{
