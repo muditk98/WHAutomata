@@ -89,7 +89,7 @@ app.post('/products', (req, res) => {
 		batch: new Date(req.body.batch)
 	}
 	if (req.body.expiry) {
-		prod.expiry = req.body.expiry
+		prod.expiry = new Date(req.body.expiry)
 	}
 	prod = new models.Product(prod)
 	var validation_errors = prod.validateSync()

@@ -3,21 +3,22 @@ html
 		include navbar.html
 		h1 #{product.name}
 		hr
-		h4 Product Id :  #{product._id}
+		h4 Product Id: #{product._id}
 		h4 Manufactured on: #{product.batch}
-		h4 Expiry:  #{product.expiry}
-		ul
+		h4 Expiry: #{product.expiry}
 			each val in stackmapdetails
-				li
-					p  Stack id : #{val.stack.id}
-					p  Location: (#{val.stack.x}, #{val.stack.y})
-					p  Count: #{val.count}
-					//- p Do you want to bring this product?
-					if !val.processing && !val.atControl
-						form(action="/tasks" method="POST")
-							input(type="text" id="id" name="id" value=val._id readonly style="display:none;")			
-							input(type="text" id="cmd" name="cmd" value='g' readonly style="display:none;")
-							input(type="Submit" value="Bring")
+				ul
+					li(style="display:block;")
+						p  Stack id: #{val.stack.id}
+						p  Location: (#{val.stack.x}, #{val.stack.y})
+						p  Count: #{val.count}
+						//- p Do you want to bring this product?
+						if !val.stack.processing && !val.stack.atControl
+							form(action="/tasks" method="POST")
+								input(type="text" id="id" name="id	" value=val._id readonly style="display:none;")
+								input(type="text" id="cmd" name="cmd" value='g' readonly style="display:none;")
+								input(type="Submit" value="Bring")
+				
 					
 
 		//- h3 :   #{stack.id}

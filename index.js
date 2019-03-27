@@ -81,8 +81,7 @@ app.get('/addProductToStack',(req,res)=>{
 app.post('/addProductToStack', (req, res) => { 
 	var product_id = req.body.product_id
 	var stack = {
-		x: req.body.x,
-		y: req.body.y
+		_id: req.body.stack_id
 	}
 
 	req.body.count = req.body.count || 1

@@ -1,14 +1,15 @@
 html
-    body
-        include navbar.html
-        h1  Product-Stack Map Page
-        hr
-        h3 List of available products and stacks are given, choose to map:
-        form(action="/addProductToStack" method="POST")
-            select(name="product_id")
-                each product in products
-                    option(value=product._id) #{product.name} 
-            select(name="stack_id")
-                each stack in stacks
-                    option(value=stack._id) Location: ( #{stack.x} , #{stack.y} ) 
-            input(type="Submit" value="Submit")
+	body
+		include navbar.html
+		h1  Product-Stack Map Page
+		hr
+		h3 List of available products and stacks are given, choose to map:
+		form(action="/addProductToStack" method="POST")
+			select(name="product_id")
+				each product in products
+					option(value=product._id) #{product.name} 
+			select(name="stack_id")
+				each stack in stacks
+					option(value=stack._id) Location: ( #{stack.x} , #{stack.y} ) 
+			input#count(type="number", name="count" step=1.0 placeholder="Count")
+			input(type="Submit" value="Submit")
