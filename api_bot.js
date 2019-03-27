@@ -37,7 +37,8 @@ device.findSerialPortChannel(address, function (channel) {
 			if (/done/.test(buffer)) {
 				app.locals.state = 'idle'
 				axios.post(app.locals.callback_url, {
-					message: 'Delivered'
+					message: 'Delivered',
+					location: app.locals.location
 				})
 				.then(response => {
 					console.log(response.status);

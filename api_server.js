@@ -164,6 +164,9 @@ app.get('/stacks', (req, res) => {
 	if ("y" in req.query) {
 		query.y = req.query.y
 	}
+	if ("processing" in req.query) {
+		query.processing = req.query.processing
+	}
 	models.Stack.find(query)
 		.then(stacks => {
 			res.send({

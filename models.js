@@ -17,6 +17,10 @@ var StackSchema = new mongoose.Schema({
 		type: Number,
 		min: 0,
 		required: true
+	},
+	processing: {
+		type: Boolean,
+		default: false
 	}
 })
 // make sure that only one stack can be on a location

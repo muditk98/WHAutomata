@@ -265,13 +265,15 @@ app.get('/bots', (req, res) => {
 	// pass locations to render
 	axios.get('https://192.168.43.165:8000/')
 		.then(response => {
-			res.send(response.body)
+			// res.send(response.body)
+			res.render('botDetails', {
+				bot: response.data
+			});
 		})
 		.catch(err => {
 			res.send('Whoops')
 		})
 		//send {bots} too
-	res.render('bots');
 })
 app.get('/bot/:id',(req,res)=>{
 	var id=req.params.id;
@@ -291,17 +293,45 @@ app.get('/sensors', (req, res) => {
 
 app.post('/cb', (req, res) => {
 	console.log(req.body);
-	res.send('Recieved')
+	models.Stack.findOne({
+		x: req.body.location.x,
+		y: req.body.location.y,
+	})
+	.then(stack => {
+		stack.x = 0
+		stack.y = 0
+		stack.processing = false;
+		return stack.save();
+	})
+	.catch(err => {
+		console.log(err);
+	})
+	.then(stack => {
+		res.send('Recieved')
+	})
 })
 
 app.post('/tasks', (req, res) => {
-	axios.post('http://192.168.43.165:8000/tasks',
-		{
-			x:req.body.x,
-			y:req.body.y,
-			callback_url:'http://192.168.43.210:3000/cb'
+	models.Stack.findOne({
+		x: req.body.x,
+		y: req.body.y
+	})
+	.then(stack => {
+		if (stack) {
+			stack.processing = true;
+			return stack.save()
+		} else {
+			throw "no stack"
 		}
-	).then((response) => {
+	})
+	.then(stack => {
+		axios.post('http://192.168.43.165:8000/tasks', {
+			x: req.body.x,
+			y: req.body.y,
+			callback_url: 'http://192.168.43.210:3000/cb'
+		})
+	})
+	.then((response) => {
 		console.log(response.status);
 		console.log(response.data);
 		// console.log(response.body);
@@ -311,6 +341,8 @@ app.post('/tasks', (req, res) => {
 		// console.log(err);
 		if (err.response.status == 503) {
 			res.send('Bot was busy')
+		} else if(err == 'no stack') {
+			res.send(err)
 		} else {
 			res.send('whoops')
 		}
