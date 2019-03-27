@@ -11,6 +11,8 @@ app.locals.db.on('error', console.error.bind(console, 'MongoDB connection error:
 // API server that could be hosted on cloud
 // We should probably convert index.js's functions to just use these
 
+// Enable All these features in front end
+
 // view products (with get) [/]
 // view product/:id [/]
 // add products [/]

@@ -202,6 +202,10 @@ app.post('/deleteProduct', (req, res) => {
 		//we are taking productId and a confirmation that if you really wanna delete the product
 		//send message deleted successfully and redirect to the products page
 		console.log(req.body)
+		if (req.body.delete.toLowerCase() == 'no') {
+			res.send('Did not delete')
+			return
+		}
 		Promise.all([
 				models.Product.deleteOne({
 					_id: req.body.id
@@ -246,7 +250,7 @@ app.get('/products/:id',(req,res)=>{
 		]
 	)
 	.then(([product, stackmapdetails]) => {
-		console.log(product)
+		console.log(stackmapdetails)
 		res.render('productDetails', {product,stackmapdetails})
 		//res.send({product, stackmapdetails})
 	})
