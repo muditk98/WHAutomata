@@ -338,7 +338,7 @@ app.post('/cb', (req, res) => {
 		})
 		.then(stack => {
 			stack.processing = false;
-			stack.atControl = (req.body.cmd == 'g' && req.body.message.toLowerCase() != 'rfiderr');
+			stack.atControl = (req.body.cmd == 'g' && req.body.message == 'done');
 			return stack.save();
 		})		
 		.then(stack => {
@@ -354,9 +354,9 @@ app.post('/cb', (req, res) => {
 })
 
 app.post('/tasks', (req, res) => {
-	if (!req.body.id && req.body.cmd == 's') {
+	if (!req.body.id && req.body.cmd == 's' || req.body.cmd == 'a') {
 		axios.post('http://192.168.43.165:8000/tasks', {
-			cmd: req.body.cmd || 's',
+			cmd: req.body.cmd,
 			callback_url: 'http://192.168.43.210:3000/cb'
 		})
 		.then((response) => {
@@ -403,10 +403,10 @@ app.post('/tasks', (req, res) => {
 		})
 		.catch(err => {
 			// console.log(err);
-			if (err.response.status == 503) {
-				res.send('Bot was busy')
-			} else if(err == 'no stack') {
+			if (err == 'no stack') {
 				res.send(err)
+			} else if (err.response.status == 503) {
+				res.send('Bot was busy')
 			} else {
 				res.send('whoops')
 			}
